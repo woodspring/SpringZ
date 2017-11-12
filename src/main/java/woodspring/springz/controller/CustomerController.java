@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.google.gson.Gson;
 
@@ -21,7 +22,8 @@ import woodspring.springz.dto.Customer;
 import woodspring.springz.service.CustomerService;
 
 @RestController
-@RequestMapping("AB")
+//@RequestMapping("AB")
+
 public class CustomerController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -37,6 +39,7 @@ public class CustomerController {
 //		return responseEntity;
 //	}
 	@GetMapping("/list")
+	@CrossOrigin(origins = { "http://localhost:8484", "http://localhost:4200" }, maxAge = 6000)
 	//@RequestMapping(method = RequestMethod.GET)
 	public String listCustomer() {
 		List<Customer> customerList = customerService.listCustomers();
