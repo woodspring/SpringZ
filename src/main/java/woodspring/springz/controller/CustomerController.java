@@ -74,10 +74,10 @@ public class CustomerController {
 	}
 	
 	@PostMapping(value="new")
-	public ResponseEntity<String> newCustomer(@RequestBody Customer aCustomer ) {
+	public ResponseEntity<Customer> newCustomer(@RequestBody Customer aCustomer ) {
 		Customer theCustomer = customerService.save( aCustomer);
 		String customerStr = (theCustomer == null) ? "" : new Gson().toJson(theCustomer);
-		ResponseEntity<String> responseEntity = new ResponseEntity<>(customerStr, HttpStatus.OK);
+		ResponseEntity<Customer> responseEntity = new ResponseEntity<Customer>(theCustomer, HttpStatus.OK);
 		return responseEntity;
 	}
 
