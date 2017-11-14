@@ -7,6 +7,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.SessionFactory;
+//import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+//import org.springframework.orm.jpa.vendor.HibernateJpaSessionFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -43,6 +46,9 @@ public class JpaConfiguration {
 	
 	@Autowired
     private Environment environment;
+	
+//	@Autowired
+//	private EntityManagerFactory entityMgrFactory;
 	
 	@Value("${datasource.woodspring.maxPoolSize:10}")
     private int maxPoolSize;
@@ -111,6 +117,7 @@ public class JpaConfiguration {
         properties.put("hibernate.hbm2ddl.auto", environment.getRequiredProperty("datasource.woodspring.hibernate.hbm2ddl.method"));
         properties.put("hibernate.show_sql", environment.getRequiredProperty("datasource.woodspring.hibernate.show_sql"));
         properties.put("hibernate.format_sql", environment.getRequiredProperty("datasource.woodspring.hibernate.format_sql"));
+        properties.put("hibernate.current_session_context_class", environment.getRequiredProperty("datasource.woodspring.hibernate.current_session"));
         if(StringUtils.isNotEmpty(environment.getRequiredProperty("datasource.woodspring.defaultSchema"))){
             properties.put("hibernate.default_schema", environment.getRequiredProperty("datasource.woodspring.defaultSchema"));
         }
@@ -124,6 +131,31 @@ public class JpaConfiguration {
         txManager.setEntityManagerFactory(emf);
         return txManager;
     }
+  
+    @Bean
+	public SessionFactory getSessionFactory() {
+//	    if (entityMgrFactory.unwrap(SessionFactory.class) == null) {
+//	        throw new NullPointerException("factory is not a hibernate factory");
+//	    }
+    	SessionFactory retSession = null;
+	    try {
+			if (entityManagerFactory().getNativeEntityManagerFactory().unwrap(SessionFactory.class) == null) {
+			    throw new NullPointerException("factory is not a hibernate factory");
+			}
+			retSession = entityManagerFactory().getNativeEntityManagerFactory().unwrap(SessionFactory.class);
+		} catch (NamingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	    return retSession;
+	}
+//    @Bean
+//    public HibernateJpaSessionFactoryBean sessionFactory(EntityManagerFactory emf) {
+//        HibernateJpaSessionFactoryBean fact = new HibernateJpaSessionFactoryBean();
+//        fact.setEntityManagerFactory(emf);
+//        return fact;
+//    }
     
 //    @Bean
 //    public WebMvcConfigurer corsConfigurer() {

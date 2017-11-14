@@ -23,7 +23,7 @@ import woodspring.springz.service.CustomerService;
 
 @RestController
 //@RequestMapping("AB")
-
+@CrossOrigin(origins = { "http://localhost:8484", "http://localhost:4200" }, maxAge = 6000)
 public class CustomerController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -41,19 +41,29 @@ public class CustomerController {
 	@GetMapping("/list")
 	@CrossOrigin(origins = { "http://localhost:8484", "http://localhost:4200" }, maxAge = 6000)
 	//@RequestMapping(method = RequestMethod.GET)
-	public String listCustomer() {
+	public ResponseEntity<List<Customer>> listCustomer() {
 		List<Customer> customerList = customerService.listCustomers();
-		String custmersStr = new Gson().toJson(customerList);
+	
+		//String custmersStr = new Gson().toJson(customerList);
 		//ResponseEntity<String> responseEntity = new ResponseEntity<>(custmersStr, HttpStatus.OK);
 		logger.info("List<Customer>:["+customerList.size()+"]");
-		return custmersStr;
+		ResponseEntity<List<Customer>> responseEntity = new ResponseEntity<List<Customer>>(customerList, HttpStatus.OK);
+		return responseEntity;
 	}
+//	public String listCustomer() {
+//		List<Customer> customerList = customerService.listCustomers();
+//	
+//		String custmersStr = new Gson().toJson(customerList);
+//		//ResponseEntity<String> responseEntity = new ResponseEntity<>(custmersStr, HttpStatus.OK);
+//		logger.info("List<Customer>:["+customerList.size()+"]");
+//		return custmersStr;
+//	}
 	
 	@GetMapping("/getbyid/{id}")
-	public ResponseEntity<String> getCustomerById(@PathVariable String idStr) {
-		Customer theCustomer = customerService.getCustomerById( Integer.valueOf( idStr));
-		String custmersStr = new Gson().toJson(theCustomer);
-		ResponseEntity<String> responseEntity = new ResponseEntity<>(custmersStr, HttpStatus.OK);
+	public ResponseEntity<Customer> getCustomerById(@PathVariable int id) {
+		Customer theCustomer = customerService.getCustomerById( id);//Integer.valueOf( idStr));
+		//String custmersStr = new Gson().toJson(theCustomer);
+		ResponseEntity<Customer> responseEntity = new ResponseEntity<Customer>(theCustomer, HttpStatus.OK);
 		return responseEntity;
 	}
 	
@@ -75,9 +85,11 @@ public class CustomerController {
 	
 	@PostMapping(value="new")
 	public ResponseEntity<Customer> newCustomer(@RequestBody Customer aCustomer ) {
+		logger.info("New Customer --START-- aCustomer:["+aCustomer.toString()+"]");
 		Customer theCustomer = customerService.save( aCustomer);
 		String customerStr = (theCustomer == null) ? "" : new Gson().toJson(theCustomer);
 		ResponseEntity<Customer> responseEntity = new ResponseEntity<Customer>(theCustomer, HttpStatus.OK);
+		logger.info("New CustomerEND:["+theCustomer.toString()+"]");
 		return responseEntity;
 	}
 
